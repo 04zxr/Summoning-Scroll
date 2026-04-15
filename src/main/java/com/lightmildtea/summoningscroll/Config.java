@@ -9,8 +9,6 @@ public class Config {
     public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     public static final ModConfigSpec SPEC;
 
-    // Each entry is a string in format "modid:item=modid:entity"
-    // Example: "minecraft:bone=minecraft:skeleton"
     public static final ModConfigSpec.ConfigValue<List<? extends String>> SUMMON_ENTRIES;
 
     static {
@@ -21,7 +19,10 @@ public class Config {
                 .comment(
                         "List of catalyst -> entity mappings.",
                         "Format: \"modid:item=modid:entity\"",
-                        "Example: \"minecraft:bone=minecraft:skeleton\""
+                        "To use item tags: \"#modid:tagname=modid:entity\"",
+                        "Examples:",
+                        "  \"minecraft:bone=minecraft:skeleton\"",
+                        "  \"#minecraft:swords=minecraft:zombie\""
                 )
                 .defineListAllowEmpty(
                         "entries",

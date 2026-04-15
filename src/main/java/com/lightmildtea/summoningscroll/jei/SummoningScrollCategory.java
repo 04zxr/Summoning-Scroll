@@ -9,29 +9,21 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemStack;
 
 public class SummoningScrollCategory implements IRecipeCategory<SummoningRecipe> {
 
-    // Recipe type identifier
     public static final RecipeType<SummoningRecipe> RECIPE_TYPE = RecipeType.create(
             SummoningScroll.MODID,
             "summoning",
             SummoningRecipe.class
     );
 
-    private final IDrawable background;
     private final IDrawable icon;
 
     public SummoningScrollCategory(IGuiHelper guiHelper) {
-        // Simple blank background sized for our layout
-        // Slot(catalyst) + Arrow + Slot(result) = about 90x18
-        this.background = guiHelper.createBlankDrawable(90, 18);
-
-        // Use the scroll as the category icon
         this.icon = guiHelper.createDrawableItemStack(
-                new net.minecraft.world.item.ItemStack(SummoningScroll.SUMMONING_SCROLL.get())
+                new ItemStack(SummoningScroll.SUMMONING_SCROLL.get())
         );
     }
 
@@ -46,29 +38,35 @@ public class SummoningScrollCategory implements IRecipeCategory<SummoningRecipe>
     }
 
     @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
     public IDrawable getIcon() {
         return icon;
     }
 
     @Override
+    public int getWidth() {
+        return 90;
+    }
+
+    @Override
+    public int getHeight() {
+        return 18;
+    }
+
+    @Override
     public void setRecipe(IRecipeLayoutBuilder builder, SummoningRecipe recipe, IFocusGroup focuses) {
-
-        // Slot 1 - Scroll (always required)
+        // Main Hand - Scroll
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
-                .addItemStack(new net.minecraft.world.item.ItemStack(
-                        SummoningScroll.SUMMONING_SCROLL.get()
-                ));
+                .addItemStack(new ItemStack(SummoningScroll.SUMMONING_SCROLL.get()));
 
-        // Slot 2 - Catalyst (offhand item)
-        builder.addSlot(RecipeIngredientRole.INPUT, 37, 1)
-                .addItemStack(recipe.getCatalyst());
+        // Off Hand - Catalyst (show all tag items if from tag)
+        var catalystSlot = builder.addSlot(RecipeIngredientRole.INPUT, 37, 1);
+        if (recipe.hasTagItems()) {
+            catalystSlot.addItemStacks(recipe.getTagItems()); // Cycles through all tag items
+        } else {
+            catalystSlot.addItemStack(recipe.getCatalyst());
+        }
 
-        // Slot 3 - Result (spawn egg or empty)
+        // Result - Spawn Egg
         if (!recipe.getResult().isEmpty()) {
             builder.addSlot(RecipeIngredientRole.OUTPUT, 73, 1)
                     .addItemStack(recipe.getResult());

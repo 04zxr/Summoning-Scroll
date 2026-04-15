@@ -31,14 +31,14 @@ public class SummoningScrollItem extends Item {
     }
 
     // ─────────────────────────────────────────────
-    // START CHARGING
+    // Start Charging
     // ─────────────────────────────────────────────
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         ItemStack offhand = player.getOffhandItem();
 
-        // Check 1 - Offhand is empty
+        // Check - Offhand is empty
         if (offhand.isEmpty()) {
             if (!level.isClientSide) {
                 player.sendSystemMessage(
@@ -48,8 +48,8 @@ public class SummoningScrollItem extends Item {
             return InteractionResultHolder.fail(stack);
         }
 
-        // Check 2 - Offhand item is not a valid catalyst
-        if (!SummonConfigLoader.loadedSummonMap.containsKey(offhand.getItem())) {
+        // Check - Offhand item
+        if (!SummonConfigLoader.isValidCatalyst(offhand.getItem())) {
             if (!level.isClientSide) {
                 player.sendSystemMessage(
                         Component.literal("§cThis is not a valid catalyst!")
@@ -63,7 +63,7 @@ public class SummoningScrollItem extends Item {
     }
 
     // ─────────────────────────────────────────────
-    // RELEASE TO SUMMON
+    // Release to Summon
     // ─────────────────────────────────────────────
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
@@ -77,18 +77,19 @@ public class SummoningScrollItem extends Item {
     }
 
     // ─────────────────────────────────────────────
-    // SUMMON LOGIC
+    // Summon Logic
     // ─────────────────────────────────────────────
     private void performSummon(ServerPlayer player, ItemStack stack, Level level) {
         ItemStack offhandStack = player.getOffhandItem();
 
-        // Use config-loaded map
-        if (offhandStack.isEmpty() || !SummonConfigLoader.loadedSummonMap.containsKey(offhandStack.getItem())) {
+        if (offhandStack.isEmpty() || !SummonConfigLoader.isValidCatalyst(offhandStack.getItem())) {
             player.sendSystemMessage(Component.literal("§cCatalyst missing!"));
             return;
         }
 
-        EntityType<?> entityType = SummonConfigLoader.loadedSummonMap.get(offhandStack.getItem());
+        EntityType<?> entityType = SummonConfigLoader.getEntityType(offhandStack.getItem());
+        if (entityType == null) return;
+
         BlockPos spawnPos = player.blockPosition().relative(player.getDirection());
 
         if (!(level instanceof ServerLevel serverLevel)) return;
@@ -116,7 +117,7 @@ public class SummoningScrollItem extends Item {
     }
 
     // ─────────────────────────────────────────────
-    // ANIMATION + SOUND
+    // Animation + Sound
     // ─────────────────────────────────────────────
     private void triggerScrollAnimation(ServerPlayer player, ItemStack stack, ServerLevel level) {
         PacketDistributor.sendToPlayer(
@@ -135,7 +136,7 @@ public class SummoningScrollItem extends Item {
     }
 
     // ─────────────────────────────────────────────
-    // DURATION & ANIMATION TYPE
+    // Duration & Animation Type
     // ─────────────────────────────────────────────
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
@@ -148,7 +149,7 @@ public class SummoningScrollItem extends Item {
     }
 
     // ─────────────────────────────────────────────
-    // TOOLTIP
+    // Tooltips
     // ─────────────────────────────────────────────
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {

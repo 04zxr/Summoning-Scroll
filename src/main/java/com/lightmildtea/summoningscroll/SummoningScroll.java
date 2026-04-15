@@ -62,7 +62,6 @@ public class SummoningScroll {
 
         NeoForge.EVENT_BUS.register(this);
 
-        // ✅ Register config
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
