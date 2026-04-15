@@ -19,6 +19,8 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.world.item.TooltipFlag;
+import java.util.List;
 
 public class SummoningScrollItem extends Item {
 
@@ -36,11 +38,21 @@ public class SummoningScrollItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         ItemStack offhand = player.getOffhandItem();
 
-        // Use config-loaded map
-        if (offhand.isEmpty() || !SummonConfigLoader.loadedSummonMap.containsKey(offhand.getItem())) {
+        // Check 1 - Offhand is empty
+        if (offhand.isEmpty()) {
             if (!level.isClientSide) {
                 player.sendSystemMessage(
-                        Component.literal("§cYou need a valid catalyst in your offhand!")
+                        Component.literal("§cYou need a catalyst in your offhand!")
+                );
+            }
+            return InteractionResultHolder.fail(stack);
+        }
+
+        // Check 2 - Offhand item is not a valid catalyst
+        if (!SummonConfigLoader.loadedSummonMap.containsKey(offhand.getItem())) {
+            if (!level.isClientSide) {
+                player.sendSystemMessage(
+                        Component.literal("§cThis is not a valid catalyst!")
                 );
             }
             return InteractionResultHolder.fail(stack);
@@ -133,5 +145,15 @@ public class SummoningScrollItem extends Item {
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.BOW;
+    }
+
+    // ─────────────────────────────────────────────
+    // TOOLTIP
+    // ─────────────────────────────────────────────
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(
+                Component.literal("§7Hold Right-Click while holding a catalyst in your offhand to summon an entity.")
+        );
     }
 }

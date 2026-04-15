@@ -14,7 +14,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -39,7 +38,9 @@ public class SummoningScroll {
     public static final DeferredItem<Item> SUMMONING_SCROLL =
             ITEMS.register("summoning_scroll",
                     () -> new SummoningScrollItem(
-                            new Item.Properties().stacksTo(16)
+                            new Item.Properties()
+                                    .stacksTo(16)
+                                    .rarity(net.minecraft.world.item.Rarity.UNCOMMON)
                     )
             );
 
@@ -60,7 +61,6 @@ public class SummoningScroll {
         CREATIVE_MODE_TABS.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
-        modEventBus.addListener(this::addCreative);
 
         // ✅ Register config
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -68,8 +68,6 @@ public class SummoningScroll {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("Summoning Scroll mod loaded!");
-
-        // ✅ Load config entries after setup
         event.enqueueWork(SummonConfigLoader::reload);
     }
 
@@ -82,16 +80,8 @@ public class SummoningScroll {
         );
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.COMBAT) {
-            event.accept(SUMMONING_SCROLL.get());
-        }
-    }
-
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        // Reload config when server starts
-        // This ensures entries are fresh if config was edited
         SummonConfigLoader.reload();
         LOGGER.info("Summoning Scroll server starting!");
     }
