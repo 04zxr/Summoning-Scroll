@@ -1,0 +1,14 @@
+{
+  "itemGroup.summoningscroll": "Summoning Scroll",
+  "block.summoningscroll.example_block": "Example Block",
+  "item.summoningscroll.example_item": "Example Item",
+
+  "summoningscroll.configuration.title": "Summoning Scroll Configs",
+  "summoningscroll.configuration.section.summoningscroll.common.toml": "Summoning Scroll Configs",
+  "summoningscroll.configuration.section.summoningscroll.common.toml.title": "Summoning Scroll Configs",
+  "summoningscroll.configuration.items": "Item List",
+  "summoningscroll.configuration.logDirtBlock": "Log Dirt Block",
+  "summoningscroll.configuration.magicNumberIntroduction": "Magic Number Text",
+  "summoningscroll.configuration.magicNumber": "Magic Number",
+  "item.summoningscroll.summoning_scroll": "Summoning Scroll"
+}
