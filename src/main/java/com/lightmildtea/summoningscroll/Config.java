@@ -26,14 +26,8 @@ public class Config {
                 .defineListAllowEmpty(
                         "entries",
                         List.of(
-                                "minecraft:bone=minecraft:skeleton",
-                                "minecraft:rotten_flesh=minecraft:zombie",
-                                "minecraft:blaze_rod=minecraft:blaze",
-                                "minecraft:ender_pearl=minecraft:enderman",
-                                "minecraft:spider_eye=minecraft:spider",
-                                "minecraft:slime_ball=minecraft:slime",
-                                "minecraft:ghast_tear=minecraft:ghast",
-                                "minecraft:wither_skeleton_skull=minecraft:wither_skeleton"
+                                "minecraft:nether_star=minecraft:wither",
+                                "minecraft:echo_shard=minecraft:warden"
                         ),
                         Config::validateEntry
                 );
