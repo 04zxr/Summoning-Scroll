@@ -9,10 +9,5 @@
 
   "tooltip.summoningscroll.summoning_scroll": "§7Hold right-click while holding a catalyst in your offhand to summon an entity.",
 
-  "jei.summoningscroll.category.summoning": "Summoning Scroll",
-
-  "command.summoningscroll.reload.success": "Summoning Scroll config reloaded.",
-  "command.summoningscroll.format_config.success": "Formatted Summoning Scroll config file.",
-  "command.summoningscroll.format_config.noop": "Config already formatted (or no changes needed)."
+  "jei.summoningscroll.category.summoning": "Summoning Scroll"
 }
-

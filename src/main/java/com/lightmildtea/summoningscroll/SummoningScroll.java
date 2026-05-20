@@ -3,8 +3,6 @@ package com.lightmildtea.summoningscroll;
 import com.lightmildtea.summoningscroll.item.SummoningScrollItem;
 import com.lightmildtea.summoningscroll.network.PlayScrollAnimationPacket;
 import com.mojang.logging.LogUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -16,7 +14,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -93,39 +90,5 @@ public class SummoningScroll {
     public void onConfigReload(ModConfigEvent.Reloading event) {
         if (!event.getConfig().getModId().equals(MODID)) return;
         SummonConfigLoader.reload();
-    }
-
-    @SubscribeEvent
-    public void onRegisterCommands(RegisterCommandsEvent event) {
-        event.getDispatcher().register(
-                Commands.literal(MODID)
-                        .requires(source -> source.hasPermission(2))
-                        .then(Commands.literal("reload")
-                                .executes(context -> {
-                                    SummonConfigLoader.reload();
-                                    context.getSource().sendSuccess(
-                                            () -> Component.translatable("command.summoningscroll.reload.success")
-                                                    .withStyle(ChatFormatting.GREEN),
-                                            true
-                                    );
-                                    return 1;
-                                })
-                        )
-                        .then(Commands.literal("format_config")
-                                .executes(context -> {
-                                    boolean changed = SummonConfigLoader.formatConfigFile();
-                                    context.getSource().sendSuccess(
-                                            () -> Component.translatable(
-                                                            changed
-                                                                    ? "command.summoningscroll.format_config.success"
-                                                                    : "command.summoningscroll.format_config.noop"
-                                                    )
-                                                    .withStyle(ChatFormatting.GREEN),
-                                            false
-                                    );
-                                    return 1;
-                                })
-                        )
-        );
     }
 }
