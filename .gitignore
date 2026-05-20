@@ -42,3 +42,6 @@ repo/
 # Other
 eclipse
 libs
+
+# Codex agent instructions (keep local)
+AGENTS.md

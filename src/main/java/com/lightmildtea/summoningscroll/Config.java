@@ -42,7 +42,7 @@ public class Config {
         if (!(entry instanceof String str)) return false;
         if (!str.contains("=")) return false;
 
-        String[] parts = str.split("=");
+        String[] parts = str.split("=", 2);
         if (parts.length != 2) return false;
 
         // Both parts must contain a colon (modid:name format)

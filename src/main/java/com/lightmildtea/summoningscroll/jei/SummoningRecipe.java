@@ -44,7 +44,7 @@ public class SummoningRecipe {
         List<SummoningRecipe> recipes = new ArrayList<>();
 
         // Direct item entries
-        for (Map.Entry<Item, EntityType<?>> entry : SummonConfigLoader.loadedSummonMap.entrySet()) {
+        for (Map.Entry<Item, EntityType<?>> entry : SummonConfigLoader.getLoadedSummonMap().entrySet()) {
             Item catalystItem = entry.getKey();
             EntityType<?> entityType = entry.getValue();
 
@@ -55,7 +55,7 @@ public class SummoningRecipe {
         }
 
         // Tag entries - expand all items in the tag
-        for (Map.Entry<TagKey<Item>, EntityType<?>> entry : SummonConfigLoader.loadedTagSummonMap.entrySet()) {
+        for (Map.Entry<TagKey<Item>, EntityType<?>> entry : SummonConfigLoader.getLoadedTagSummonMap().entrySet()) {
             TagKey<Item> tag = entry.getKey();
             EntityType<?> entityType = entry.getValue();
             ItemStack resultStack = getSpawnEgg(entityType);

@@ -36,8 +36,6 @@ public record PlayScrollAnimationPacket(ItemStack scroll) implements CustomPacke
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null) return;
 
-            SummoningScroll.LOGGER.info("Packet received! Calling displayItemActivation directly");
-
             // Store scroll for the mixin to swap
             ScrollAnimationHandler.pendingScrollStack = packet.scroll().copy();
 

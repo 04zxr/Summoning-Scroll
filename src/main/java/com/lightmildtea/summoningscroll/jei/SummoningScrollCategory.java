@@ -34,7 +34,7 @@ public class SummoningScrollCategory implements IRecipeCategory<SummoningRecipe>
 
     @Override
     public Component getTitle() {
-        return Component.literal("Summoning Scroll");
+        return Component.translatable("jei.summoningscroll.category.summoning");
     }
 
     @Override

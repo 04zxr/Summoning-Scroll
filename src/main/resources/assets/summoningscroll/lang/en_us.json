@@ -1,14 +1,13 @@
 {
   "itemGroup.summoningscroll": "Summoning Scroll",
-  "block.summoningscroll.example_block": "Example Block",
-  "item.summoningscroll.example_item": "Example Item",
+  "item.summoningscroll.summoning_scroll": "Summoning Scroll",
 
-  "summoningscroll.configuration.title": "Summoning Scroll Configs",
-  "summoningscroll.configuration.section.summoningscroll.common.toml": "Summoning Scroll Configs",
-  "summoningscroll.configuration.section.summoningscroll.common.toml.title": "Summoning Scroll Configs",
-  "summoningscroll.configuration.items": "Item List",
-  "summoningscroll.configuration.logDirtBlock": "Log Dirt Block",
-  "summoningscroll.configuration.magicNumberIntroduction": "Magic Number Text",
-  "summoningscroll.configuration.magicNumber": "Magic Number",
-  "item.summoningscroll.summoning_scroll": "Summoning Scroll"
+  "message.summoningscroll.catalyst_required": "You need a catalyst in your offhand!",
+  "message.summoningscroll.invalid_catalyst": "This is not a valid catalyst!",
+  "message.summoningscroll.catalyst_missing": "Catalyst missing!",
+  "message.summoningscroll.summoned": "Summoned %s!",
+
+  "tooltip.summoningscroll.summoning_scroll": "Hold right-click while holding a catalyst in your offhand to summon an entity.",
+
+  "jei.summoningscroll.category.summoning": "Summoning Scroll"
 }

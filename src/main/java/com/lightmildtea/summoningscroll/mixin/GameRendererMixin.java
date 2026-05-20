@@ -1,6 +1,5 @@
 package com.lightmildtea.summoningscroll.mixin;
 
-import com.lightmildtea.summoningscroll.SummoningScroll;
 import com.lightmildtea.summoningscroll.client.ScrollAnimationHandler;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.item.ItemStack;
@@ -18,12 +17,9 @@ public class GameRendererMixin {
             remap = false
     )
     private ItemStack modifyActivationItem(ItemStack original) {
-        SummoningScroll.LOGGER.info("displayItemActivation called! original: {}", original);
-
         if (!ScrollAnimationHandler.pendingScrollStack.isEmpty()) {
             ItemStack scroll = ScrollAnimationHandler.pendingScrollStack;
             ScrollAnimationHandler.pendingScrollStack = ItemStack.EMPTY;
-            SummoningScroll.LOGGER.info("Returning scroll: {}", scroll);
             return scroll;
         }
         return original;

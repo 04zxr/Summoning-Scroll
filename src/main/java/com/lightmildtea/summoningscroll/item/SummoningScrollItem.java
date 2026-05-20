@@ -3,6 +3,7 @@ package com.lightmildtea.summoningscroll.item;
 import com.lightmildtea.summoningscroll.SummonConfigLoader;
 import com.lightmildtea.summoningscroll.network.PlayScrollAnimationPacket;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -15,11 +16,11 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.minecraft.world.item.TooltipFlag;
+
 import java.util.List;
 
 public class SummoningScrollItem extends Item {
@@ -30,30 +31,21 @@ public class SummoningScrollItem extends Item {
         super(properties);
     }
 
-    // ─────────────────────────────────────────────
-    // Start Charging
-    // ─────────────────────────────────────────────
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         ItemStack offhand = player.getOffhandItem();
 
-        // Check - Offhand is empty
         if (offhand.isEmpty()) {
             if (!level.isClientSide) {
-                player.sendSystemMessage(
-                        Component.literal("§cYou need a catalyst in your offhand!")
-                );
+                player.sendSystemMessage(Component.translatable("message.summoningscroll.catalyst_required"));
             }
             return InteractionResultHolder.fail(stack);
         }
 
-        // Check - Offhand item
         if (!SummonConfigLoader.isValidCatalyst(offhand.getItem())) {
             if (!level.isClientSide) {
-                player.sendSystemMessage(
-                        Component.literal("§cThis is not a valid catalyst!")
-                );
+                player.sendSystemMessage(Component.translatable("message.summoningscroll.invalid_catalyst"));
             }
             return InteractionResultHolder.fail(stack);
         }
@@ -62,9 +54,6 @@ public class SummoningScrollItem extends Item {
         return InteractionResultHolder.consume(stack);
     }
 
-    // ─────────────────────────────────────────────
-    // Release to Summon
-    // ─────────────────────────────────────────────
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
         if (level.isClientSide) return;
@@ -76,24 +65,19 @@ public class SummoningScrollItem extends Item {
         performSummon(serverPlayer, stack, level);
     }
 
-    // ─────────────────────────────────────────────
-    // Summon Logic
-    // ─────────────────────────────────────────────
     private void performSummon(ServerPlayer player, ItemStack stack, Level level) {
         ItemStack offhandStack = player.getOffhandItem();
 
         if (offhandStack.isEmpty() || !SummonConfigLoader.isValidCatalyst(offhandStack.getItem())) {
-            player.sendSystemMessage(Component.literal("§cCatalyst missing!"));
+            player.sendSystemMessage(Component.translatable("message.summoningscroll.catalyst_missing"));
             return;
         }
 
         EntityType<?> entityType = SummonConfigLoader.getEntityType(offhandStack.getItem());
         if (entityType == null) return;
-
-        BlockPos spawnPos = player.blockPosition().relative(player.getDirection());
-
         if (!(level instanceof ServerLevel serverLevel)) return;
 
+        BlockPos spawnPos = player.blockPosition().relative(player.getDirection());
         var spawnedEntity = entityType.spawn(
                 serverLevel,
                 null,
@@ -104,26 +88,18 @@ public class SummoningScrollItem extends Item {
                 false
         );
 
-        if (spawnedEntity != null) {
-            triggerScrollAnimation(player, stack, serverLevel);
+        if (spawnedEntity == null) return;
 
-            offhandStack.shrink(1);
-            stack.shrink(1);
+        triggerScrollAnimation(player, stack, serverLevel);
 
-            player.sendSystemMessage(
-                    Component.literal("§aSummoned §e" + spawnedEntity.getName().getString() + "§a!")
-            );
-        }
+        offhandStack.shrink(1);
+        stack.shrink(1);
+
+        player.sendSystemMessage(Component.translatable("message.summoningscroll.summoned", spawnedEntity.getName()));
     }
 
-    // ─────────────────────────────────────────────
-    // Animation + Sound
-    // ─────────────────────────────────────────────
     private void triggerScrollAnimation(ServerPlayer player, ItemStack stack, ServerLevel level) {
-        PacketDistributor.sendToPlayer(
-                player,
-                new PlayScrollAnimationPacket(stack.copy())
-        );
+        PacketDistributor.sendToPlayer(player, new PlayScrollAnimationPacket(stack.copy()));
 
         level.playSound(
                 null,
@@ -135,9 +111,6 @@ public class SummoningScrollItem extends Item {
         );
     }
 
-    // ─────────────────────────────────────────────
-    // Duration & Animation Type
-    // ─────────────────────────────────────────────
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return CHARGE_DURATION;
@@ -148,13 +121,9 @@ public class SummoningScrollItem extends Item {
         return UseAnim.BOW;
     }
 
-    // ─────────────────────────────────────────────
-    // Tooltips
-    // ─────────────────────────────────────────────
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(
-                Component.literal("§7Hold Right-Click while holding a catalyst in your offhand to summon an entity.")
-        );
+        tooltipComponents.add(Component.translatable("tooltip.summoningscroll.summoning_scroll"));
     }
 }
+
