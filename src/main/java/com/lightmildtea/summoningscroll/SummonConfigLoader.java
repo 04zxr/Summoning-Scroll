@@ -6,11 +6,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.neoforged.fml.loading.FMLPaths;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SummonConfigLoader {
 
@@ -96,6 +104,56 @@ public class SummonConfigLoader {
 
         SummoningScroll.LOGGER.info("Loaded {} item entries and {} tag entries from config.",
                 loadedSummonMap.size(), loadedTagSummonMap.size());
+
+        rewriteConfigForReadability();
+    }
+
+    private static final Pattern INLINE_ENTRIES_PATTERN =
+            Pattern.compile("(?m)^(\\s*)entries\\s*=\\s*\\[[^\\]]*\\]\\s*$");
+
+    private static void rewriteConfigForReadability() {
+        Path configPath = FMLPaths.CONFIGDIR.get().resolve(SummoningScroll.MODID + "-common.toml");
+        if (!Files.exists(configPath)) return;
+
+        try {
+            String text = Files.readString(configPath, StandardCharsets.UTF_8);
+
+            Matcher matcher = INLINE_ENTRIES_PATTERN.matcher(text);
+            if (!matcher.find()) return; // already multiline (or different format)
+
+            List<? extends String> entries = Config.SUMMON_ENTRIES.get();
+            if (entries.isEmpty()) return;
+
+            String indent = matcher.group(1);
+            String elementIndent = indent + "\t";
+
+            StringBuilder replacement = new StringBuilder();
+            replacement.append(indent).append("entries = [\n");
+            for (int i = 0; i < entries.size(); i++) {
+                String entry = entries.get(i);
+                replacement
+                        .append(elementIndent)
+                        .append('"')
+                        .append(escapeTomlString(entry))
+                        .append('"');
+                if (i != entries.size() - 1) replacement.append(',');
+                replacement.append('\n');
+            }
+            replacement.append(indent).append(']');
+
+            String rewritten = matcher.replaceFirst(Matcher.quoteReplacement(replacement.toString()));
+            if (rewritten.equals(text)) return;
+
+            Files.writeString(configPath, rewritten, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            SummoningScroll.LOGGER.debug("Failed to rewrite config for readability", e);
+        }
+    }
+
+    private static String escapeTomlString(String value) {
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
     }
 
     // Check if an item matches any registered catalyst (item or tag)
