@@ -2,6 +2,7 @@ package com.lightmildtea.summoningscroll.item;
 
 import com.lightmildtea.summoningscroll.SummonConfigLoader;
 import com.lightmildtea.summoningscroll.network.PlayScrollAnimationPacket;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -26,6 +27,7 @@ import java.util.List;
 public class SummoningScrollItem extends Item {
 
     private static final int CHARGE_DURATION = 72000;
+    private static final int REQUIRED_CHARGE_TICKS = 22;
 
     public SummoningScrollItem(Properties properties) {
         super(properties);
@@ -60,7 +62,9 @@ public class SummoningScrollItem extends Item {
         if (!(entity instanceof ServerPlayer serverPlayer)) return;
 
         int timeUsed = this.getUseDuration(stack, entity) - timeLeft;
-        if (timeUsed < 5) return;
+        if (timeUsed < REQUIRED_CHARGE_TICKS) {
+            return;
+        }
 
         performSummon(serverPlayer, stack, level);
     }
@@ -95,7 +99,12 @@ public class SummoningScrollItem extends Item {
         offhandStack.shrink(1);
         stack.shrink(1);
 
-        player.sendSystemMessage(Component.translatable("message.summoningscroll.summoned", spawnedEntity.getName()));
+        player.sendSystemMessage(
+                Component.translatable(
+                        "message.summoningscroll.summoned",
+                        spawnedEntity.getName().copy().withStyle(ChatFormatting.YELLOW)
+                )
+        );
     }
 
     private void triggerScrollAnimation(ServerPlayer player, ItemStack stack, ServerLevel level) {
@@ -126,4 +135,3 @@ public class SummoningScrollItem extends Item {
         tooltipComponents.add(Component.translatable("tooltip.summoningscroll.summoning_scroll"));
     }
 }
-
